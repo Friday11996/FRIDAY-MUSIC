@@ -3,153 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friday Music | Premium Vinyl Store</title>
-    
+    <title>Friday Music Official Store</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #151515;
+            --border: #252525;
+            --text-main: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
-        body {
-            background-color: #000000;
-            color: #ffffff;
-        }
-
-        /* Navigation Bar */
+        /* Navigation */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 5%;
-            background-color: #111;
-            border-bottom: 1px solid #333;
+            padding: 15px 5%;
+            background: #000;
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            color: #fff;
-            text-transform: uppercase;
-        }
+        .nav-left { display: flex; align-items: center; gap: 12px; }
+        
+        /* Music Bar Logo (SVG) */
+        .music-bar-logo { width: 35px; height: 35px; fill: white; }
 
-        .cart-btn {
-            background: none;
+        .brand-name { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        .cart-box {
             border: 1px solid #fff;
-            color: #fff;
-            padding: 8px 15px;
+            padding: 8px 18px;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .cart-btn:hover {
-            background: #fff;
-            color: #000;
         }
 
         /* Hero Section */
-        .hero {
-            height: 40vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        .hero-section {
+            padding: 80px 20px;
             text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                        url('https://images.unsplash.com/photo-1539375665275-f9ad415ef9ac?auto=format&fit=crop&q=80&w=1200');
-            background-size: cover;
-            background-position: center;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
         }
 
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
+        .hero-section h1 {
+            font-size: 2.5rem;
+            letter-spacing: 12px;
+            margin-bottom: 20px;
+            font-weight: 300;
         }
 
-        /* Album Section */
+        /* Bada FM Lining Logo (SVG) */
+        .fm-main-logo {
+            width: 320px;
+            height: auto;
+            margin-top: 10px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        }
+
+        /* Album Grid */
         .container {
             max-width: 1100px;
             margin: 50px auto;
             padding: 0 20px;
         }
 
-        .section-title {
-            font-size: 22px;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            border-left: 4px solid #fff;
-            padding-left: 15px;
-        }
-
         .album-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
         }
 
-        /* Album Card */
         .album-card {
-            background: #111;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             padding: 20px;
-            border-radius: 4px;
-            transition: 0.4s;
-            position: relative;
-            border: 1px solid #222;
+            text-align: center;
+            transition: transform 0.3s ease;
         }
 
-        .album-card:hover {
-            border-color: #555;
-            transform: translateY(-5px);
-        }
+        .album-card:hover { transform: translateY(-8px); border-color: #444; }
 
-        .album-img {
+        .image-container {
             width: 100%;
             aspect-ratio: 1/1;
-            background-color: #222;
+            background: #050505;
             margin-bottom: 20px;
-            object-fit: cover;
-            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #222;
+            overflow: hidden;
         }
 
-        .pre-order-tag {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            background: #ff0000;
-            color: white;
-            padding: 5px 10px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+        /* Guitar and Record Images */
+        .image-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Card FM Lining (SVG) */
+        .card-fm-logo { width: 80%; opacity: 0.6; filter: grayscale(1); }
 
-        .artist-name {
-            font-size: 14px;
-            color: #888;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
+        .album-label { font-size: 10px; color: #777; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .album-title { font-size: 15px; margin-bottom: 20px; font-weight: 600; }
 
-        .album-name {
-            font-size: 18px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .price {
-            font-size: 20px;
-            color: #fff;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .buy-button {
+        .btn {
             width: 100%;
             padding: 12px;
             background: #fff;
@@ -158,75 +124,86 @@
             font-weight: bold;
             text-transform: uppercase;
             cursor: pointer;
-            transition: 0.3s;
+            font-size: 11px;
         }
 
-        .buy-button:hover {
-            background: #ccc;
-        }
-
-        /* Footer */
         footer {
+            padding: 50px;
             text-align: center;
-            padding: 40px;
-            color: #555;
-            font-size: 12px;
-            border-top: 1px solid #222;
-            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            color: #333;
+            font-size: 11px;
+            margin-top: 60px;
         }
+
+        @media (max-width: 800px) { .album-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo">Friday Music</div>
-        <button class="cart-btn">Cart (<span id="count">0</span>)</button>
+        <div class="nav-left">
+            <svg class="music-bar-logo" viewBox="0 0 24 24">
+                <rect x="3" y="10" width="2" height="4"></rect>
+                <rect x="7" y="7" width="2" height="10"></rect>
+                <rect x="11" y="4" width="2" height="16"></rect>
+                <rect x="15" y="8" width="2" height="8"></rect>
+                <rect x="19" y="11" width="2" height="2"></rect>
+            </svg>
+            <div class="brand-name">Friday Music</div>
+        </div>
+        <div class="cart-box">Cart (0)</div>
     </nav>
 
-    <header class="hero">
-        <h1>EXCLUSIVE VINYL</h1>
-        <p>Audiophile Limited Editions</p>
+    <header class="hero-section">
+        <h1>NEW RELEASES</h1>
+        <svg class="fm-main-logo" viewBox="0 0 200 80">
+            <path d="M20,60 L20,20 L60,20 M20,40 L50,40" stroke="white" stroke-width="4" fill="none"/>
+            <path d="M80,60 L80,20 L100,45 L120,20 L120,60" stroke="white" stroke-width="4" fill="none"/>
+            <path d="M140,50 Q160,10 180,50 T220,50" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
     </header>
 
-    <div class="container">
-        <h2 class="section-title">Featured Albums</h2>
-        
+    <main class="container">
         <div class="album-grid">
+            
             <div class="album-card">
-                <div class="pre-order-tag">Pre-Order</div>
-                <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=500" class="album-img" alt="Rod Stewart">
-                <div class="artist-name">Rod Stewart</div>
-                <div class="album-name">Vagabond Heart (Expanded Splatter Edition)</div>
-                <span class="price">$65.98</span>
-                <button class="buy-button" onclick="addToCart('Rod Stewart')">Add to Cart</button>
+                <span class="album-label">Featured</span>
+                <div class="image-container">
+                    <svg class="card-fm-logo" viewBox="0 0 200 80">
+                        <path d="M20,60 L20,20 L60,20 M20,40 L50,40" stroke="white" stroke-width="4" fill="none"/>
+                        <path d="M80,60 L80,20 L100,45 L120,20 L120,60" stroke="white" stroke-width="4" fill="none"/>
+                        <path d="M140,40 Q150,10 160,40 T180,40" stroke="white" stroke-width="3" fill="none"/>
+                    </svg>
+                </div>
+                <div class="album-title">NEW RELEASE</div>
+                <button class="btn">View Album</button>
             </div>
 
             <div class="album-card">
-                <img src="https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&q=80&w=500" class="album-img" alt="Warren Zevon">
-                <div class="artist-name">Warren Zevon</div>
-                <div class="album-name">The Wind (Clear Limited Edition)</div>
-                <span class="price">$38.98</span>
-                <button class="buy-button" onclick="addToCart('Warren Zevon')">Add to Cart</button>
+                <span class="album-label">Genre</span>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1511735111819-9a3f7709049c?auto=format&fit=crop&w=500" alt="Rock Guitar">
+                </div>
+                <div class="album-title">ROCK COLLECTIONS</div>
+                <button class="btn">View Album</button>
             </div>
+
+            <div class="album-card">
+                <span class="album-label">Limited</span>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1603048588665-791ca8aea617?auto=format&fit=crop&w=500" alt="Vinyl Record">
+                </div>
+                <div class="album-title">LIMITED EDITIONS</div>
+                <button class="btn">View Album</button>
+            </div>
+
         </div>
-    </div>
+    </main>
 
     <footer>
-        &copy; 2026 Friday Music LLC. All Rights Reserved.
+        &copy; 2026 FRIDAY MUSIC OFFICIAL STORE | POWERED BY CUSTOM UI
     </footer>
-
-    <script>
-        let cartCount = 0;
-
-        function addToCart(artist) {
-            cartCount++;
-            document.getElementById('count').innerText = cartCount;
-            
-            // Ek chota feedback user ko dene ke liye
-            console.log(artist + " added to cart.");
-            alert(artist + " album has been added to your cart!");
-        }
-    </script>
 
 </body>
 </html>
