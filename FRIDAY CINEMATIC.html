@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friday Music - Ultimate Cinematic</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* --- MODERN CSS START --- */
+        :root { 
+            --primary: #1DB954; 
+            --bg-dark: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05); /* Glass effect */
+            --text-light: #ffffff;
+        }
+
+        body { 
+            background: var(--bg-dark); 
+            color: var(--text-light); 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            overflow-x: hidden; 
+        }
+        
+        /* Full Screen Background Cinematic Video */
+        #bgVideo {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -1; opacity: 0.4; display: none;
+            filter: blur(2px); /* Thoda blur cinematic feel ke liye */
+        }
+
+        /* Glassmorphism Navigation */
+        nav { 
+            background: rgba(0, 0, 0, 0.75); 
+            backdrop-filter: blur(20px); /* Premium Blur effect */
+            padding: 15px 25px; 
+            border-bottom: 1px solid rgba(29, 185, 84, 0.3); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-logo { color: var(--primary); font-weight: 800; letter-spacing: 1px; font-size: 1.2rem; }
+        .admin-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #aaa; font-size: 10px; padding: 5px 10px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .admin-btn:hover { background: var(--primary); color: black; border-color: var(--primary); }
+        
+        /* Admin Section Styling */
+        .admin-zone { 
+            background: rgba(30, 30, 30, 0.9); 
+            backdrop-filter: blur(10px);
+            padding: 25px; margin: 20px; border-radius: 15px; display: none; 
+            border: 1px solid rgba(29, 185, 84, 0.5); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        input { width: 95%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: white; outline: none; }
+        input:focus { border-color: var(--primary); }
+        .publish-btn { background: var(--primary); color: black; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem; margin-top: 10px;}
+        .publish-btn:hover { background: #1ed760; box-shadow: 0 0 15px var(--primary); }
+
+        /* Modern Music Grid UI */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 25px; 
+            padding: 30px; 
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 15px; 
+            border-radius: 16px; 
+            text-align: center; 
+            cursor: pointer; 
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth bouncy effect */
+        }
+
+        .card:hover { 
+            transform: translateY(-10px) scale(1.02); /* Upar uthne wala effect */
+            background: rgba(255, 255, 255, 0.1); 
+            border-color: rgba(29, 185, 84, 0.5);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .card img { 
+            width: 100%; aspect-ratio: 1/1; border-radius: 12px; object-fit: cover; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4); margin-bottom: 10px;
+        }
+        .card p { margin: 5px 0; font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Glowy Bottom Player Bar */
+        #player-bar { 
+            position: fixed; bottom: 0; width: 100%; 
+            background: linear-gradient(to top, black 20%, rgba(0,0,0,0.8)); 
+            backdrop-filter: blur(15px);
+            padding: 20px 0 30px 0; display: none; text-align: center; z-index: 200;
+            border-top: 1px solid rgba(29, 185, 84, 0.3);
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        #nowPlaying { margin: 5px 0 15px 0; color: var(--primary); text-shadow: 0px 0px 10px rgba(29, 185, 84, 0.5); font-weight: 700; letter-spacing: 0.5px; }
+        
+        audio { 
+            width: 90%; height: 45px; outline: none;
+            filter: invert(1) hue-rotate(95deg) saturate(2) brightness(1.2); /* Custom Green Theme Player */
+        }
+        /* --- MODERN CSS END --- */
+    </style>
+</head>
+<body>
+
+    <video id="bgVideo" autoplay muted loop playsinline></video>
+
+    <nav>
+        <div class="nav-logo">FRIDAY MUSIC</div>
+        <button onclick="checkAdmin()" class="admin-btn">Admin Access</button>
+    </nav>
+
+    <div id="adminArea" class="admin-zone">
+        <h3 style="color:var(--primary); margin-top:0;">Upload Studio</h3>
+        <input type="text" id="sTitle" placeholder="Song Name (e.g., Alan Walker - Faded)">
+        <input type="text" id="sImg" placeholder="Album Image URL (https://...)">
+        <input type="text" id="sAudio" placeholder="Audio MP3 URL (https://...)">
+        <input type="text" id="sVideo" placeholder="Cinematic Video URL (.mp4) (Optional)">
+        <button onclick="publishData()" class="publish-btn">Publish Now</button>
+    </div>
+
+    <div class="grid" id="musicGrid">
+        <p style="grid-column: 1/-1; text-align: center; color: #666;">Loading amazing music...</p>
+    </div>
+
+    <div id="player-bar">
+        <h4 id="nowPlaying"></h4>
+        <audio id="mainAudio" controls controlsList="nodownload"></audio>
+    </div>
+
+    <script>
+        // --- STEP 1: Firebase Connection ---
+        // IMPORTANT: Replace the placeholders below with your actual Firebase Project Config!
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase only if config is present (prevents errors if you run without config)
+        let db;
+        if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
+             firebase.initializeApp(firebaseConfig);
+             db = firebase.firestore();
+        } else {
+             console.error("Firebase Config missing! Please fill details in Step 1.");
+             document.getElementById('musicGrid').innerHTML = "<p style='color:red; text-align:center; grid-column: 1/-1;'>Error: Please configure Firebase connection in code.</p>";
+        }
+
+
+        // --- STEP 2: Simple Password check for Admin ---
+        // WARNING: Not secure for production. Use Firebase Auth later.
+        function checkAdmin() {
+            const password = prompt("Enter Admin Password:");
+            if(password === "admin123") {
+                document.getElementById('adminArea').style.display='block';
+                // Auto-scroll to admin area
+                document.getElementById('adminArea').scrollIntoView({behavior: "smooth"});
+            } else if (password !== null) {
+                alert("Wrong Password!");
+            }
+        }
+
+        // --- STEP 3: Function to Save song to Database ---
+        function publishData() {
+            if (!db) { alert("Database not connected!"); return; }
+
+            const title = document.getElementById('sTitle').value;
+            const image = document.getElementById('sImg').value;
+            const audio = document.getElementById('sAudio').value;
+            
+            if(!title || !image || !audio) {
+                alert("Please fill at least Title, Image URL and Audio URL.");
+                return;
+            }
+
+            const song = {
+                title: title,
+                image: image,
+                audio: audio,
+                video: document.getElementById('sVideo').value,
+                date: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            const btn = document.querySelector('.publish-btn');
+            btn.innerText = "Publishing..."; btn.disabled = true;
+
+            db.collection("songs").add(song).then(() => {
+                alert("Song Published Successfully!");
+                // Clear inputs
+                document.getElementById('sTitle').value = '';
+                document.getElementById('sImg').value = '';
+                document.getElementById('sAudio').value = '';
+                document.getElementById('sVideo').value = '';
+                btn.innerText = "Publish Now"; btn.disabled = false;
+                document.getElementById('adminArea').style.display='none';
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+                alert("Error publishing song. Check console.");
+                btn.innerText = "Publish Now"; btn.disabled = false;
+            });
+        }
+
+        // --- STEP 4: Real-time Listener (Fetch Data) ---
+        if(db) {
+            db.collection("songs").orderBy("date", "desc").onSnapshot(snap => {
+                const grid = document.getElementById('musicGrid');
+                
+                if(snap.empty) {
+                     grid.innerHTML = "<p style='text-align:center; grid-column: 1/-1; color:#888;'>No songs yet. Be the first to add one!</p>";
+                     return;
+                }
+
+                grid.innerHTML = ""; // Clear loading/old data
+                snap.forEach(doc => {
+                    const s = doc.data();
+                    // Escape single quotes in titles to prevent JS errors in onclick
+                    const safeTitle = s.title.replace(/'/g, "\\'");
+                    const safeVideo = s.video ? s.video.replace(/'/g, "\\'") : "";
+
+                    grid.innerHTML += `
+                        <div class="card" onclick="playCinematic('${safeTitle}', '${s.audio}', '${safeVideo}')">
+                            <img src="${s.image}" onerror="this.src='https://via.placeholder.com/300/000000/1DB954?text=Music'">
+                            <p>${s.title}</p>
+                        </div>`;
+                });
+            });
+        }
+
+        // --- STEP 5: Play Function with Video Sync & Media Controls ---
+        const audioPlayer = document.getElementById('mainAudio');
+        const bgVideo = document.getElementById('bgVideo');
+        const playerBar = document.getElementById('player-bar');
+
+        // Sync video play/pause with audio
+        audioPlayer.onplay = () => { if(bgVideo.src) bgVideo.play(); };
+        audioPlayer.onpause = () => { if(bgVideo.src) bgVideo.pause(); };
+        audioPlayer.onended = () => { if(bgVideo.src) bgVideo.pause(); };
+
+        function playCinematic(title, audioSrc, videoSrc) {
+            playerBar.style.display = "block";
+            document.getElementById('nowPlaying').innerText = "Playing: " + title;
+
+            // Audio load and play
+            audioPlayer.src = audioSrc;
+            audioPlayer.play().catch(e => console.log("Auto-play blocked initially, user interaction needed."));
+
+            // Background Cinematic Video logic
+            if(videoSrc && videoSrc.trim() !== "") {
+                bgVideo.src = videoSrc;
+                bgVideo.style.display = "block";
+                // Video will autoplay because of audioPlayer.onplay hook above
+            } else {
+                bgVideo.pause();
+                bgVideo.src = ""; // Clear source
+                bgVideo.style.display = "none";
+            }
+
+            // Media Session API (For Lock Screen Controls on Mobile)
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: title,
+                    artist: 'Friday Music',
+                    album: 'Cinematic Vibes',
+                    artwork: [{ src: 'https://via.placeholder.com/512/000000/1DB954?text=FM', sizes: '512x512', type: 'image/png' }]
+                });
+                 navigator.mediaSession.setActionHandler('play', () => audioPlayer.play());
+                 navigator.mediaSession.setActionHandler('pause', () => audioPlayer.pause());
+            }
+        }
+    </script>
+</body>
+</html>
